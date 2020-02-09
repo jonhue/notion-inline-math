@@ -11,4 +11,6 @@ This script adds support for inline math to Notion - rerendering edited formulas
 
 To create an inline math block, in a regular inline codeblock surround your LaTex code with `$$`. When your cursor leaves the block, the script will automatically render the formula.
 
+After a page refresh, formulas are rendered automatically. Press `F2` to render all formulas on a page.
+
 Originally inspired by https://github.com/evertheylen/notion-inline-math.

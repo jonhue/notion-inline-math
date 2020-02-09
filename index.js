@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name Inline Math for Notion
 // @homepageURL https://github.com/jonhue/notion-inline-math
-// @version 0.1.1
+// @version 0.2.0
 // @match https://www.notion.so/*
 // @require https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.js
 // ==/UserScript==
@@ -52,7 +52,12 @@ const handleLoadEvent = () => {
     initializeKatex()
     setTimeout(renderAll, 1500)
 }
-const handleKeyEvent = e => rerender(e.target)
+const handleKeyEvent = e => {
+    if (e.key == 'F2' && !e.ctrlKey && !e.shiftKey && !e.altKey)
+        renderAll()
+    else
+        rerender(e.target)
+}
 // Rerendering has to be delayed as Notion would otherwise immediately replace the rendered KaTex
 const handleMouseEvent = e => rerender(e.target, 200)
 
