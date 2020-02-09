@@ -1,11 +1,14 @@
 // ==UserScript==
 // @name Inline Math for Notion
 // @homepageURL https://github.com/jonhue/notion-inline-math
-// @version 0.2.0
+// @version 0.2.1
 // @match https://www.notion.so/*
 // @require https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.js
 // ==/UserScript==
 
+const holdKeyEpsilon = 50
+
+let keyDownTimeStamp = null
 const updatedBlocks = []
 
 const initializeKatex = () => {
@@ -37,7 +40,7 @@ const renderAll = (block = document) =>
 
 const rerender = (target, delay = 0) => {
     const block = target.closest('div[contenteditable=true]')
-    const lastBlock = updatedBlocks.pop()
+    const lastBlock = updatedBlocks.shift()
     setTimeout(() => {
         if (block !== null) {
             if (lastBlock !== undefined && lastBlock !== block)
@@ -52,15 +55,19 @@ const handleLoadEvent = () => {
     initializeKatex()
     setTimeout(renderAll, 1500)
 }
-const handleKeyEvent = e => {
+const handleKeyUpEvent = e => {
     if (e.key == 'F2' && !e.ctrlKey && !e.shiftKey && !e.altKey)
+        renderAll()
+    else if (keyDownTimeStamp !== null && e.timeStamp - keyDownTimeStamp < holdKeyEpsilon)
         renderAll()
     else
         rerender(e.target)
 }
+const handleKeyDownEvent = e => keyDownTimeStamp = e.timeStamp
 // Rerendering has to be delayed as Notion would otherwise immediately replace the rendered KaTex
 const handleMouseEvent = e => rerender(e.target, 200)
 
 window.addEventListener('load', handleLoadEvent, true)
-document.addEventListener('keyup', handleKeyEvent, true)
+document.addEventListener('keyup', handleKeyUpEvent, true)
+document.addEventListener('keydown', handleKeyDownEvent, true)
 document.addEventListener('mouseup', handleMouseEvent, true)
