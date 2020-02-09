@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name Inline Math for Notion
 // @homepageURL https://github.com/jonhue/notion-inline-math
-// @version 0.2.1
+// @version 0.2.2
 // @match https://www.notion.so/*
 // @require https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.js
 // ==/UserScript==
@@ -9,7 +9,9 @@
 const holdKeyEpsilon = 50
 
 let keyDownTimeStamp = null
-const updatedBlocks = []
+let updatedBlocks = []
+
+const getBlock = target => target.closest('div[contenteditable=true]')
 
 const initializeKatex = () => {
     const link = document.createElement('link')
@@ -35,11 +37,21 @@ const render = span => {
     })
 }
 
-const renderAll = (block = document) =>
+const renderAll = (block = document) => {
+    updatedBlocks = []
     block.querySelectorAll('span[style*="monospace"]').forEach(render)
+}
+
+const renderAllExcept = block => {
+    updatedBlocks = [block]
+    document.querySelectorAll('span[style*="monospace"]').forEach(span => {
+        if (!block.contains(span))
+          render(span)
+    })
+}
 
 const rerender = (target, delay = 0) => {
-    const block = target.closest('div[contenteditable=true]')
+    const block = getBlock(target)
     const lastBlock = updatedBlocks.shift()
     setTimeout(() => {
         if (block !== null) {
@@ -59,7 +71,7 @@ const handleKeyUpEvent = e => {
     if (e.key == 'F2' && !e.ctrlKey && !e.shiftKey && !e.altKey)
         renderAll()
     else if (keyDownTimeStamp !== null && e.timeStamp - keyDownTimeStamp < holdKeyEpsilon)
-        renderAll()
+        renderAllExcept(getBlock(e.target))
     else
         rerender(e.target)
 }
