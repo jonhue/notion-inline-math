@@ -1,11 +1,11 @@
-# Notion inline math
+# Inline Math for Notion
 
 This script adds support for inline math to Notion - rerendering edited formulas automatically.
 
 ## Installation
 
 1. Install the [Violentmonkey](https://violentmonkey.github.io/) browser extension.
-1. Within Violentmonkey, import the script from `https://github.com/jonhue/notion-inline-math/blob/master/index.js`.
+1. Within Violentmonkey, import the script from `https://raw.githubusercontent.com/jonhue/notion-inline-math/master/index.js`.
 
 ## Usage
 
